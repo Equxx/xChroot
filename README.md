@@ -24,15 +24,13 @@ $ sudo apt install debootstrap -y
 
 $ cd /
 
-$ sudo mkdir /dst
-
-$ cd /dst
-
-$ sudo mkdir /stable
-
-$ sudo debootstrap stable /dst/stable
-
 $ git clone https://github.com/Equxx/xChroot
+
+$ cd xChroot/dst/stable
+
+$ sudo debootstrap stable /xChroot/dst/stable
+
+
 
 $ sudo ./xChroot
 
