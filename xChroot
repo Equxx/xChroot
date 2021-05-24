@@ -1,0 +1,93 @@
+#!/bin/bash
+
+on_start() {
+    echo '     ...... '
+    echo '      .... '
+	echo '       .. '
+	echo ' Uyarı!!! işiniz bitince "exit" yazarak çıkış yapmayı unutmayın.'
+	echo ' '
+	echo ' Dilerseniz, Twitch ve Dlive kanalıma abone olabilirsiniz...'
+    echo ' '
+    echo ' Twitch kanalım ; https://www.twitch.tv/equxx'
+    echo ' '
+    echo ' Dlive kanalım; https://www.dlive.tv/equxx'
+    echo ' '
+    echo ' Kaynak kodunu istediğiniz gibi kullanabilirsiniz.'
+    echo ' '
+    echo ' Equxx ®®®'
+    echo '   (^_^)   '
+    echo '         '
+    echo '        .. '
+    echo '       ....'
+    echo '      ......'
+	echo ' /dev dizini bağlanıyor.'
+	mkdir -p ${CHROOT}/dev
+	mount --bind /dev ${CHROOT}/dev
+	
+	echo ' /dev/pts dizini bağlanıyor..'
+	mkdir -p ${CHROOT}/dev/pts
+	mount -t devpts none ${CHROOT}/dev/pts
+	
+	echo ' /proc dizini bağlanıyor...'
+	mkdir -p ${CHROOT}/proc
+	mount --bind /proc ${CHROOT}/proc
+	
+	echo ' /sys dizini bağlanıyor. '
+	mkdir -p ${CHROOT}/sys
+	mount --bind /sys ${CHROOT}/sys
+	
+	echo ' /etc/resolv.conf dosyası kopyalanıyor..'
+	mkdir -p ${CHROOT}/etc
+	if [[ -f /etc/resolv.conf ]]; then
+		cp /etc/resolv.conf ${CHROOT}/etc/resolv.conf
+	fi
+	
+	echo ' X Pencere Yöneticisi Etkinleştiriliyor...'
+	xhost +
+}
+
+on_exit() {
+	echo ' /sys dizini ayrılıyor...'
+	umount ${CHROOT}/sys && rm -r ${CHROOT}/sys
+	
+	echo ' /proc dizini ayrılıyor.'
+	umount ${CHROOT}/proc && rm -r ${CHROOT}/proc
+	
+	echo ' /dev/pts dizini ayrılıyor..'
+	umount ${CHROOT}/dev/pts
+	
+	echo ' /dev dizini ayrılıyor...'
+	umount ${CHROOT}/dev && rm -r ${CHROOT}/dev
+}
+
+##################################
+##########  Uyarılar   ##########
+##################################
+
+CHROOT=`readlink -f -- .`
+
+if [[ ${UID} -ne 0 ]]; then
+	echo ' Hata: Yönetici hakları ile çalıştırın.' 
+	echo ' Komut: sudo ./xchroot'
+	exit 1
+fi
+
+if [[ ! -f ${CHROOT}/bin/bash ]]; then
+	echo ' Hata: '${CHROOT}'/bin/bash bulunamadı.'
+	exit 1
+fi
+
+if [[ ! -d ${CHROOT}/lib ]]; then
+	echo ' Hata: '${CHROOT}'/lib bulunamadı.'
+	exit 1
+fi
+
+echo 'chroot dizini: '${CHROOT}
+
+on_start
+chroot ${CHROOT}
+on_exit
+
+echo ' Chrootdan çıktınız.'
+echo ' İyi günler dilerim...'
+
