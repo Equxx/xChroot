@@ -28,6 +28,8 @@ $ git clone https://github.com/Equxx/xChroot
 
 $ cd xChroot/dst/stable
 
+$ sudo chmod +x xChroot
+
 $ sudo debootstrap stable /xChroot/dst/stable
 
 
